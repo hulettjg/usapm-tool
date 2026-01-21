@@ -2,100 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>USAPM CAP Slide Generator (v2.8)</title>
+    <title>USAPM CAP Slide Generator (v2.1)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --bg-color: #f0f2f5; --text-color: #1c1e21; --container-bg: #ffffff;
-            --header-color: #005A9C; --input-bg: #f5f6f7; --input-border: #ccd0d5;
-            --item-border: #ddd; --item-hover-bg: #e2f3ff; --collapsible-bg: #e9ebee; 
-            --collapsible-hover: #dddfe2; --shadow-1: rgba(0, 0, 0, 0.1); --shadow-2: rgba(0, 0, 0, 0.08);
+            --bg-color: #f4f4f9; --text-color: #333; --container-bg: #fff;
+            --header-color: #005A9C; --input-bg: #fff; --input-border: #ccc;
+            --item-border: #ddd; --item-hover-bg: #e2f3ff;
+            --collapsible-bg: #eee; --collapsible-hover: #ccc;
         }
         body.dark-mode {
-            --bg-color: #18191a; --text-color: #e4e6eb; --container-bg: #242526;
-            --header-color: #8ab4f8; --input-bg: #3a3b3c; --input-border: #4a4c4e;
-            --item-border: #3e4042; --item-hover-bg: #2a3a4a;
-            --collapsible-bg: #3a3b3c; --collapsible-hover: #4a4c4e; --shadow-1: rgba(0, 0, 0, 0.2); --shadow-2: rgba(0, 0, 0, 0.18);
+            --bg-color: #121212; --text-color: #e0e0e0; --container-bg: #1e1e1e;
+            --header-color: #8ab4f8; --input-bg: #2a2a2a; --input-border: #555;
+            --item-border: #444; --item-hover-bg: #2a3a4a;
+            --collapsible-bg: #2a2a2a; --collapsible-hover: #3a3a3a;
         }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; padding: 2em; background-color: var(--bg-color); color: var(--text-color);
-            display: flex; justify-content: center;
-        }
-        .dashboard-container { display: flex; gap: 30px; align-items: flex-start; max-width: 1600px; width: 100%; }
-        .form-panel { flex: 3; min-width: 0; }
-        .preview-panel { flex: 2; min-width: 0; position: sticky; top: 2em; }
-        .container { 
-            padding: 25px; background: var(--container-bg); border-radius: 12px; 
-            box-shadow: 0 4px 12px var(--shadow-2); border: 1px solid var(--item-border);
-            margin-bottom: 30px;
-        }
-        h1, h2, h3 { color: var(--header-color); border-bottom: 1px solid var(--item-border); padding-bottom: 15px; margin-top: 0; }
-        textarea, input, select { 
-            width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--input-border); 
-            font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; background-color: var(--input-bg); 
-            color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        textarea:focus, input:focus, select:focus {
-            border-color: #007bff; box-shadow: 0 0 0 2px rgba(0,123,255,.25); outline: none;
-        }
-        body.dark-mode select { background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e4e6eb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
-        .btn { 
-            background-color: #007bff; color: white; padding: 10px 18px; border: none; border-radius: 6px; 
-            cursor: pointer; font-size: 0.95rem; margin-right: 8px; font-weight: 600;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-        .btn:hover { background-color: #0069d9; }
-        .btn:active { transform: scale(0.98); }
-        .btn-save { background-color: #28a745; }
-        .btn-save:hover { background-color: #218838; }
-        .deficiency-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--item-border); border-radius: 8px; margin-bottom: 8px; transition: background-color 0.2s; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 2em; background-color: var(--bg-color); color: var(--text-color); }
+        .dashboard-container { display: flex; gap: 20px; align-items: flex-start; }
+        .form-panel { width: 55%; }
+        .preview-panel { width: 45%; position: sticky; top: 20px; }
+        .container { max-width: 100%; padding: 20px; background: var(--container-bg); border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: var(--header-color); border-bottom: 2px solid var(--item-border); padding-bottom: 10px; }
+        textarea, input, select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid var(--input-border); font-size: 1rem; margin-bottom: 10px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
+        body.dark-mode select { background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e0e0e0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        .btn { background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-right: 5px; } .btn-save { background-color: #28a745; }
+        .deficiency-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--item-border); border-radius: 5px; margin-bottom: 5px; }
         .deficiency-list-item:hover { background-color: var(--item-hover-bg); }
-        .remove-btn { background-color: #dc3545; color: white; }
-        .remove-btn:hover { background-color: #c82333; }
-        .edit-btn { background-color: #ffc107; color: black; }
-        .edit-btn:hover { background-color: #e0a800; }
-        .backup-btn { background-color: #17a2b8; color: white; }
-        .backup-btn:hover { background-color: #138496; }
-        .restore-btn { background-color: #6c757d; color: white; }
-        .restore-btn:hover { background-color: #5a6268; }
-        .slide { position: relative; border: 1px solid var(--item-border); background: var(--container-bg); color: var(--text-color); width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; box-shadow: 0 6px 18px var(--shadow-1); border-radius: 8px; overflow: hidden; }
-        .slide-header { background-color: #003366; color: white; text-align: center; padding: 1.2vw; font-size: 1.6vw; font-weight: bold; }
-        .slide-body { padding: 1.8vw; font-size: 1.2vw; flex-grow: 1; white-space: pre-wrap; word-wrap: break-word; font-family: "Courier New", Courier, monospace; line-height: 1.4; }
-        .header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; } .theme-switcher { display: flex; align-items: center; gap: 8px; font-size: 1.5rem; }
+        .remove-btn { background-color: #dc3545; } .edit-btn { background-color: #ffc107; color: black; } .backup-btn { background-color: #28a745; } .restore-btn { background-color: #dc3545; }
+        .slide { border: 1px solid var(--item-border); background: var(--container-bg); color: var(--text-color); width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .slide-header { background-color: #003366; color: white; text-align: center; padding: 1vw; font-size: 1.5vw; font-weight: bold; }
+        .slide-body { padding: 1.5vw; font-size: 1.1vw; flex-grow: 1; white-space: pre-wrap; word-wrap: break-word; font-family: "Courier New", Courier, monospace; }
+        .header-controls { display: flex; justify-content: space-between; align-items: center; } .theme-switcher { display: flex; align-items: center; gap: 8px; font-size: 1.5rem; }
         .switch { position: relative; display: inline-block; width: 60px; height: 34px; } .switch input { opacity: 0; width: 0; height: 0; } .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; } .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; } input:checked + .slider { background-color: #2196F3; } input:focus + .slider { box-shadow: 0 0 1px #2196F3; } input:checked + .slider:before { transform: translateX(26px); } .slider.round { border-radius: 34px; } .slider.round:before { border-radius: 50%; }
-        .collapsible { background-color: var(--collapsible-bg); color: var(--text-color); cursor: pointer; padding: 18px; width: 100%; border: 1px solid var(--item-border); text-align: left; outline: none; font-size: 1.1rem; font-weight: 600; border-radius: 8px; transition: background-color 0.2s; } .collapsible.active, .collapsible:hover { background-color: var(--collapsible-hover); }
-        .guidance-content { padding: 0 18px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: var(--container-bg); border-radius: 0 0 8px 8px; border: 1px solid var(--item-border); border-top: none; }
-        .guidance-content table { width: 100%; border-collapse: collapse; margin: 15px 0; } .guidance-content th, .guidance-content td { border: 1px solid var(--item-border); padding: 10px; text-align: left; }
-        .item-meta { font-size: 0.8rem; color: #6c757d; margin-top: 5px; } body.dark-mode .item-meta { color: #adb5bd; }
-        .filter-section { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .footer { text-align: center; margin-top: 40px; font-size: 0.8rem; color: #888; }
-        .slide-watermark { position: absolute; bottom: 8px; right: 12px; font-size: 0.9vw; color: rgba(0, 0, 0, 0.15); font-family: "Courier New", Courier, monospace; pointer-events: none; }
-        body.dark-mode .slide-watermark { color: rgba(255, 255, 255, 0.15); }
+        .collapsible { background-color: var(--collapsible-bg); color: var(--text-color); cursor: pointer; padding: 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 15px; } .collapsible.active, .collapsible:hover { background-color: var(--collapsible-hover); }
+        .guidance-content { padding: 0 18px; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background-color: var(--input-bg); }
+        .guidance-content table { width: 100%; border-collapse: collapse; margin: 15px 0; } .guidance-content th, .guidance-content td { border: 1px solid var(--item-border); padding: 8px; text-align: left; }
+        .item-meta { font-size: 0.8rem; color: #666; margin-top: 5px; } body.dark-mode .item-meta { color: #aaa; }
+        .filter-section { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+        .footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #888; }
     </style>
 </head>
-<body>
+<body onload="initializeDashboard()">
     <div class="dashboard-container">
         <div class="form-panel">
             <div class="container">
-                <div class="header-controls"><h1>USAPM Deficiency Console</h1><div class="theme-switcher"><span>☀️</span><label class="switch"><input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()"><span class="slider round"></span></label><span>🌙</span></div></div>
+                <div class="header-controls"><h1>CAP Data Entry</h1><div class="theme-switcher"><span>☀️</span><label class="switch"><input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()"><span class="slider round"></span></label><span>🌙</span></div></div>
                 <form id="dataForm">
-                    <input type="hidden" id="currentId"><label>Deficiency Write-up:</label><textarea id="editWriteup" rows="4"></textarea><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><input type="text" id="editTracking" placeholder="Tracking Number"><select id="editSeverity"><option>Minor</option><option>Significant</option><option>Critical</option></select></div><hr style="margin: 20px 0; border-color: var(--item-border);"><h3 style="margin-top: 20px;">Root Cause & Corrective Action</h3><label>1. Cause Code Category:</label><select id="editCauseCategory" onchange="populateSubcategories(this.value)"></select><label>2. Cause Code Subcategory:</label><select id="editCauseSubcategory" onchange="populateCauseCodes(this.value)"></select><label>3. Specific Cause Code:</label><select id="editCauseCode"></select><label>Complete the sentence: "To address this, the unit will..."</label><textarea id="editCapAction" rows="3" placeholder="e.g., conduct monthly seatbelt inspections..."></textarea><label>Implementation Timeframe:</label><input list="timeframe-options" id="editCapTimeframe" placeholder="e.g., 90 days"><datalist id="timeframe-options"><option value="30 days"></option><option value="60 days"></option><option value="90 days"></option><option value="6 months"></option><option value="1 year"></option></datalist><h3 style="margin-top: 20px;">Validation & Closure</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><input type="text" id="editValidation" placeholder="Validation Event (e.g., next exercise)"><input type="text" id="editMetric" placeholder="Success Metric (e.g., 100% compliance)"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><div><label>Proposed Closure Action</label><input list="closure-actions" id="editClosureAction" value="request closure of"><datalist id="closure-actions"><option value="request closure of"></option></datalist></div><div><label>Closure Authority</label><input list="closure-authorities" id="editClosureAuthority" placeholder="Select or type..."><datalist id="closure-authorities"><option value="702 MXS/CC"></option><option value="2 MXG/CC"></option></datalist></div></div><button type="button" class="btn btn-save" onclick="saveDeficiency()">Save / Add New</button><button type="button" class="btn" onclick="clearForm()">Clear Form</button>
+                    <input type="hidden" id="currentId"><label>Deficiency Write-up:</label><textarea id="editWriteup" rows="4"></textarea><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input type="text" id="editTracking" placeholder="Tracking Number"><select id="editSeverity"><option>Minor</option><option>Significant</option><option>Critical</option></select></div><hr><h3>Root Cause & Corrective Action</h3><label>1. Cause Code Category:</label><select id="editCauseCategory" onchange="populateSubcategories(this.value)"></select><label>2. Cause Code Subcategory:</label><select id="editCauseSubcategory" onchange="populateCauseCodes(this.value)"></select><label>3. Specific Cause Code:</label><select id="editCauseCode"></select><label>Complete the sentence: "To address this, the unit will..."</label><textarea id="editCapAction" rows="3" placeholder="e.g., conduct monthly seatbelt inspections..."></textarea><label>Implementation Timeframe:</label><input list="timeframe-options" id="editCapTimeframe" placeholder="e.g., 90 days"><datalist id="timeframe-options"><option value="30 days"></option><option value="60 days"></option><option value="90 days"></option><option value="6 months"></option><option value="1 year"></option></datalist><h3>Validation & Closure</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input type="text" id="editValidation" placeholder="Validation Event (e.g., next exercise)"><input type="text" id="editMetric" placeholder="Success Metric (e.g., 100% compliance)"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Proposed Closure Action</label><input list="closure-actions" id="editClosureAction" value="request closure of"><datalist id="closure-actions"><option value="request closure of"></option></datalist></div><div><label>Closure Authority</label><input list="closure-authorities" id="editClosureAuthority" placeholder="Select or type..."><datalist id="closure-authorities"><option value="702 MXS/CC"></option><option value="2 MXG/CC"></option></datalist></div></div><button type="button" class="btn btn-save" onclick="saveDeficiency()">Save / Add New</button><button type="button" class="btn" onclick="clearForm()">Clear Form</button>
                 </form>
             </div>
-             <div class="container">
+             <div class="container" style="margin-top: 20px;">
                  <button type="button" class="collapsible">View General Closure Guidance</button>
                 <div class="guidance-content">
                     <h4>Table 1. Deficiencies Levied by Wing IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR) -> Accept (Sq/CC) -> Implement (OPR) -> <strong>Close (Sq/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR/Sq CC) -> Concur (BW/IG) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Group (All)</td><td>Propose (OPR) -> Accept (Gp/CC) -> Implement (OPR) -> <strong>Close (Gp/CC)</strong></td></tr></table>
                     <h4>Table 2. Deficiencies Levied by AFGSC/IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR/Sq CC) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR) -> Concur (Gp/CC) -> Concur (BW/IG) -> Accept (FAM) -> Implement (BW/CC) -> <strong>Close (AFGSC/IG)</strong></td></tr><tr><td>Group Minor</td><td>Propose (OPR/Gp CC) -> Accept (Gp/CC) -> Implement (OPR/Gp CC) -> <strong>Close (Gp/CC)</strong></td></tr></table>
                 </div>
             </div>
-             <div class="container">
+             <div class="container" style="margin-top: 20px;">
                 <h2>Deficiency List</h2>
-                <div class="filter-section"><input type="text" id="filterKeyword" oninput="renderDeficiencyList()" placeholder="Filter by keyword..."><select id="filterSeverity" onchange="renderDeficiencyList()"><option value="All Severities">All</option><option>Minor</option><option>Significant</option><option>Critical</option></select><select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select></div>
+                <div class="filter-section"><input type="text" id="filterKeyword" oninput="renderDeficiencyList()" placeholder="Filter..."><select id="filterSeverity" onchange="renderDeficiencyList()"><option value="All Severities">All</option><option>Minor</option><option>Significant</option><option>Critical</option></select><select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select></div>
                 <div id="deficiencyListContainer"></div>
             </div>
-            <div class="container">
+            <div class="container" style="margin-top: 20px;">
                  <button type="button" class="collapsible">Backup & Restore</button>
                 <div class="guidance-content">
                     <h3>How to Back Up Your Data</h3><ol><li>Click the "Create Backup" button.</li><li>A text box with all your data will appear. All text will be automatically selected.</li><li>Copy the selected text (Ctrl+C).</li><li>Open Notepad, paste the text (Ctrl+V), and save the file to a safe location.</li></ol>
@@ -103,30 +71,19 @@
                     <button class="btn backup-btn" onclick="createBackup()">Create Backup</button><button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button><textarea id="backupData" style="display: none; width: 100%; margin-top: 10px;" rows="8" readonly></textarea>
                 </div>
             </div>
-            <div class="footer">
-                Created by TSgt James Hulett | Version <span id="version-display"></span>
-                | <a href="#" onclick="checkForUpdates(event, true)" style="color: var(--text-color);">Check for Updates</a>
-            </div>
+            <div class="container footer">Created by TSgt James Hulett | Version 2.1</div>
         </div>
         <div class="preview-panel">
             <div class="container">
                 <h3>Live CAP Slide Preview</h3>
-                <div id="slide-to-capture" class="slide">
-                    <div class="slide-header" id="s_header">TRACKING NUMBER</div>
-                    <div class="slide-body" id="s_body">Awaiting input...</div>
-                    <div class="slide-watermark" id="s_watermark"></div>
-                </div>
+                <div id="slide-to-capture" class="slide"><div class="slide-header" id="s_header">TRACKING NUMBER</div><div class="slide-body" id="s_body">Awaiting input...</div></div>
                 <button class="btn" onclick="downloadSlide()" style="width:100%; margin-top: 20px; font-size: 1rem; background-color: #6f42c1;">Download Slide</button>
             </div>
         </div>
     </div>
     <script>
-        const CURRENT_VERSION = "2.8";
-        const VERSION_CHECK_URL = 'https://gist.githubusercontent.com/hulettjg/b2b6705b5fd829f4110440d2eba91f6c/raw/bc0f48fe73fa58f688eaa533c4aa769810865318/version.json';
+        const causeCodeHierarchy = { "Select a Category...":{},"Equipment/Tools (EQ)":{"Equipment/Tools":["EQ1: Equipment reliability...","EQ2: Inadequate/Unavailable equipment...","EQ3: Equipment/Tool Accountability inadequate"]},"Guidance (GD)":{"Guidance":["GD1: Guidance used was inadequate...","GD2: Guidance used conflicted...","GD3: Guidance used was obsolete...","GD4: Inspected unit guidance...","GD5: Other than inspected unit guidance"]},"Leadership/Supervision (LS)":{"Leadership/Supervision":["LS1: Supervisor/leadership involvement insufficient...","LS2: Ineffective communication","LS3: Decision-making process ineffective..."],"Work Environment":["LS4: Workforce effectiveness limited...","LS5: Physical working conditions not conducive...","LS6: Ops Tempo/Workload"],"Use of Resources":["LS7: Unit incorrectly prioritized...","LS8: Unit failed to adequately program..."]},"Resource Shortfall (RS)":{"Funding Shortfall":["RS1: Program shortfall (DAF level)","RS2: Program shortfall (MAJCOM/FLDCOM level)","RS3: Program shortfall (wing/delta/installation level)","RS4: Parent unit withheld funding"],"Personnel Shortfall":["RS5: Assigned personnel less than accepted averages...","RS6: Insufficient personnel due to TDY/deployment","RS7: Insufficient personnel due to medical profile","RS8: Insufficient personnel due to augmentee requirements...","RS9: Awaiting security clearance","RS14: Insufficient personnel due to PRP requirements"],"Equipment Shortfall":["RS10: Awaiting resupply","RS11: Not requisitioned","RS12: Maintenance","RS13: Deployed"]},"Safety (SE)":{"Aviation Safety":["SE1: Aviation Safety Program mgmt inadequate...","SE2: Selected aspects not implemented...","SE3: Supervisory support inadequate"],"Occupational Safety":["SE4: Occupational Safety Program mgmt inadequate...","SE5: Selected aspects not implemented...","SE6: Supervisory support inadequate"],"Space Safety":["SE7: Space Safety Program mgmt inadequate...","SE8: Selected aspects not implemented...","SE9: Supervisory support inadequate"],"Weapons Safety":["SE10: Weapons Safety Program mgmt inadequate...","SE11: Selected aspects not implemented...","SE12: Supervisory support inadequate"]},"Training (TR)":{"Program Management":["TR1: Training Program mgmt inadequate...","TR2: Training guidance/policy inadequate...","TR3: Training oversight inadequate...","TR4: Training support inadequate...","TR5: Controls/metrics inadequate..."],"Program Implementation":["TR6: Initial qualification inadequate...","TR7: Hands-on training inadequate...","TR8: Upgrade/certification inadequate...","TR9: Training Supervisory support inadequate...","TR10: Training evaluation tools inadequate...","TR11: Training documentation inadequate..."]},"Human Factors (HF)":{"Organizational Influences":["HF1: Ops tempo/Workload","HF2: Mission changes","HF3: Physical environment interfered..."],"Condition of Individual":["HF4: Attention management...","HF5: Emotional state interfered...","HF6: Inappropriate motivation...","HF7: Inappropriate substance use...","HF8: Fatigue","HF9: Unreported medical condition"],"Acts":["HF10: Skill-based errors...","HF11: Judgment/Decision-making errors...","HF12: Intentional violations..."]}};
         
-        // ** THIS LINE IS NOW DEFINITIVELY, PERMANENTLY, AND CORRECTLY FIXED. NO BACKSLASHES. **
-        const causeCodeHierarchy = {"Select a Category...":{},"Equipment/Tools (EQ)":{"Equipment/Tools":["EQ1: Equipment reliability...","EQ2: Inadequate/Unavailable equipment...","EQ3: Equipment/Tool Accountability inadequate"]},"Guidance (GD)":{"Guidance":["GD1: Guidance used was inadequate...","GD2: Guidance used conflicted...","GD3: Guidance used was obsolete...","GD4: Inspected unit guidance...","GD5: Other than inspected unit guidance"]},"Leadership/Supervision (LS)":{"Leadership/Supervision":["LS1: Supervisor/leadership involvement insufficient...","LS2: Ineffective communication","LS3: Decision-making process ineffective..."],"Work Environment":["LS4: Workforce effectiveness limited...","LS5: Physical working conditions not conducive...","LS6: Ops Tempo/Workload"],"Use of Resources":["LS7: Unit incorrectly prioritized...","LS8: Unit failed to adequately program..."]},"Resource Shortfall (RS)":{"Funding Shortfall":["RS1: Program shortfall (DAF level)","RS2: Program shortfall (MAJCOM/FLDCOM level)","RS3: Program shortfall (wing/delta/installation level)","RS4: Parent unit withheld funding"],"Personnel Shortfall":["RS5: Assigned personnel less than accepted averages...","RS6: Insufficient personnel due to TDY/deployment","RS7: Insufficient personnel due to medical profile","RS8: Insufficient personnel due to augmentee requirements...","RS9: Awaiting security clearance","RS14: Insufficient personnel due to PRP requirements"],"Equipment Shortfall":["RS10: Awaiting resupply","RS11: Not requisitioned","RS12: Maintenance","RS13: Deployed"]},"Safety (SE)":{"Aviation Safety":["SE1: Aviation Safety Program mgmt inadequate...","SE2: Selected aspects not implemented...","SE3: Supervisory support inadequate"],"Occupational Safety":["SE4: Occupational Safety Program mgmt inadequate...","SE5: Selected aspects not implemented...","SE6: Supervisory support inadequate"],"Space Safety":["SE7: Space Safety Program mgmt inadequate...","SE8: Selected aspects not implemented...","SE9: Supervisory support inadequate"],"Weapons Safety":["SE10: Weapons Safety Program mgmt inadequate...","SE11: Selected aspects not implemented...","SE12: Supervisory support inadequate"]},"Training (TR)":{"Program Management":["TR1: Training Program mgmt inadequate...","TR2: Training guidance/policy inadequate...","TR3: Training oversight inadequate...","TR4: Training support inadequate...","TR5: Controls/metrics inadequate..."],"Program Implementation":["TR6: Initial qualification inadequate...","TR7: Hands-on training inadequate...","TR8: Upgrade/certification inadequate...","TR9: Training Supervisory support inadequate...","TR10: Training evaluation tools inadequate...","TR11: Training documentation inadequate..."]},"Human Factors (HF)":{"Organizational Influences":["HF1: Ops tempo/Workload","HF2: Mission changes","HF3: Physical environment interfered..."],"Condition of Individual":["HF4: Attention management...","HF5: Emotional state interfered...","HF6: Inappropriate motivation...","HF7: Inappropriate substance use...","HF8: Fatigue","HF9: Unreported medical condition"],"Acts":["HF10: Skill-based errors...","HF11: Judgment/Decision-making errors...","HF12: Intentional violations..."]}};
-
         function applyTheme(theme) { if (theme === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('darkModeToggle').checked = true; } else { document.body.classList.remove('dark-mode'); document.getElementById('darkModeToggle').checked = false; } }
         function toggleDarkMode() { const isDark = document.getElementById('darkModeToggle').checked; const theme = isDark ? 'dark' : 'light'; localStorage.setItem('theme', theme); applyTheme(theme); }
         
@@ -136,24 +93,11 @@
             populateCategories();
             document.querySelectorAll('#dataForm input, #dataForm textarea, #dataForm select').forEach(el => el.addEventListener('input', updateSlidePreview));
             document.querySelectorAll(".collapsible").forEach(coll => { coll.addEventListener("click", function() { this.classList.toggle("active"); const content = this.nextElementSibling; if (content.style.maxHeight) { content.style.maxHeight = null; } else { content.style.maxHeight = content.scrollHeight + "px"; } }); });
-            
-            document.getElementById('version-display').textContent = CURRENT_VERSION;
-            document.getElementById('s_watermark').textContent = `v${CURRENT_VERSION}`;
-            checkForUpdates(null, false);
-            
             renderDeficiencyList();
-            clearForm();
+            updateSlidePreview();
         }
         
-        function updateSlidePreview() {
-            const finalCause = (document.getElementById('editCauseCode').value || "").replace(/^[A-Z0-9]+:\s*/, '') || "[select cause code]";
-            const correctiveAction = document.getElementById('editCapAction').value || "[insert process change]";
-            const timeframe = document.getElementById('editCapTimeframe').value || "(insert timeframe)";
-            const finalCapStatement = `Through root cause analysis, the unit determined that this deficiency was caused by ${finalCause}. To address this, the unit will ${correctiveAction}. Our updated process will be tested and adjusted, as necessary, over the next ${timeframe}. Upon completion of this period, we will validate the CAP during ${document.getElementById('editValidation').value || "..."}. If there are ${document.getElementById('editMetric').value || "..."}, we will ${document.getElementById('editClosureAction').value} the deficiency at the ${document.getElementById('editClosureAuthority').value} level.`;
-            document.getElementById('s_header').textContent = document.getElementById('editTracking').value || "TRACKING NUMBER";
-            document.getElementById('s_body').textContent = finalCapStatement;
-        }
-
+        function updateSlidePreview() { const finalCause = (document.getElementById('editCauseCode').value || "").replace(/^[A-Z0-9]+: /,'') || "[select cause code]"; const correctiveAction = document.getElementById('editCapAction').value || "[insert process change]"; const timeframe = document.getElementById('editCapTimeframe').value || "(insert timeframe)"; const deficiencyStatement = `Regarding the deficiency: "${document.getElementById('editWriteup').value.trim() || "..."}"\n\n`; const finalCapStatement = `Through root cause analysis, the unit determined that this deficiency was caused by ${finalCause}. To address this, the unit will ${correctiveAction}. Our updated process will be tested and adjusted, as necessary, over the next ${timeframe}. Upon completion of this period, we will validate the CAP during ${document.getElementById('editValidation').value || "..."}. If there are ${document.getElementById('editMetric').value || "..."}, we will ${document.getElementById('editClosureAction').value} the deficiency at the ${document.getElementById('editClosureAuthority').value} level.`; document.getElementById('s_header').textContent = document.getElementById('editTracking').value || "TRACKING NUMBER"; document.getElementById('s_body').textContent = finalCapStatement; }
         function downloadSlide() { html2canvas(document.getElementById('slide-to-capture')).then(canvas => { const link = document.createElement('a'); link.download = `CAP_Slide_${document.getElementById('editTracking').value || 'Untitled'}.png`; link.href = canvas.toDataURL('image/png'); link.click(); }); }
         function populateCategories(){const t=document.getElementById("editCauseCategory");t.innerHTML="";for(const e in causeCodeHierarchy)t.add(new Option(e,e))}function populateSubcategories(t,e=null){const n=document.getElementById("editCauseSubcategory");n.innerHTML="<option>Select...</option>",populateCauseCodes(null),t&&causeCodeHierarchy[t]&&Object.keys(causeCodeHierarchy[t]).forEach(t=>n.add(new Option(t,t))),e&&(n.value=e)}function populateCauseCodes(t,e=null){const n=document.getElementById("editCauseCode");n.innerHTML="<option>Select...</option>";const o=document.getElementById("editCauseCategory").value;o&&t&&causeCodeHierarchy[o]&&causeCodeHierarchy[o][t]&&causeCodeHierarchy[o][t].forEach(t=>n.add(new Option(t,t))),e&&(n.value=e)}
         function renderDeficiencyList() { let deficiencies = JSON.parse(localStorage.getItem('usapm_tool_deficiencies')) || []; const container = document.getElementById('deficiencyListContainer'); const filterKeyword = document.getElementById('filterKeyword').value.toLowerCase(); const filterSeverity = document.getElementById('filterSeverity').value; const sortBy = document.getElementById('sortBy')?.value || 'date-newest'; let filtered = deficiencies.filter(item => { const keywordMatch = !filterKeyword || (item.writeup && item.writeup.toLowerCase().includes(filterKeyword)) || (item.trackingNumber && item.trackingNumber.toLowerCase().includes(filterKeyword)); const severityMatch = filterSeverity === 'All Severities' || item.severity === filterSeverity; return keywordMatch && severityMatch; }); const severityOrder = { "Critical": 3, "Significant": 2, "Minor": 1 }; switch (sortBy) { case 'date-newest': filtered.sort((a, b) => new Date(b.lastEdited) - new Date(a.lastEdited)); break; case 'date-oldest': filtered.sort((a, b) => new Date(a.lastEdited) - new Date(b.lastEdited)); break; case 'severity': filtered.sort((a, b) => (severityOrder[b.severity] || 0) - (severityOrder[a.severity] || 0)); break; case 'tracking-az': filtered.sort((a, b) => (a.trackingNumber || '').localeCompare(b.trackingNumber || '')); break; } container.innerHTML = ''; filtered.forEach(item => { const lastEditedDate = item.lastEdited ? new Date(item.lastEdited).toLocaleString() : 'Not yet saved'; const itemDiv = document.createElement('div'); itemDiv.className = 'deficiency-list-item'; itemDiv.innerHTML = `<div><span><strong>${item.trackingNumber}</strong>: ${(item.writeup || '').split('\n')[0]}</span><div class="item-meta">Last Edited: ${lastEditedDate}</div></div><div><button class="btn edit-btn" onclick="loadDeficiency(${item.id})">Edit</button><button class="btn remove-btn" onclick="removeDeficiency(${item.id})">Delete</button></div>`; container.appendChild(itemDiv); }); }
@@ -163,45 +107,6 @@
         function clearForm() { document.getElementById('dataForm').reset(), document.getElementById('currentId').value = '', populateCategories(), updateSlidePreview() }
         function createBackup() { const data = localStorage.getItem('usapm_tool_deficiencies'); if (!data || data === '[]') { alert("There is no data to backup."); return; } const formattedData = JSON.stringify(JSON.parse(data), null, 2); const backupTextarea = document.getElementById('backupData'); backupTextarea.value = formattedData; backupTextarea.style.display = 'block'; backupTextarea.select(); document.execCommand('copy'); alert("Backup data created below and copied to clipboard. Paste this into a plain .txt file and save it."); }
         function restoreFromBackup() { const pastedText = prompt("Paste the entire contents of your backup file here:"); if (pastedText === null || pastedText.trim() === "") { alert("Restore cancelled."); return; } try { const data = JSON.parse(pastedText); if (Array.isArray(data)) { if (confirm("Are you sure you want to overwrite your current list with this backup? This cannot be undone.")) { localStorage.setItem('usapm_tool_deficiencies', JSON.stringify(data)); renderDeficiencyList(); clearForm(); alert("Restore successful!"); } } else { throw new Error("Data is not a valid array."); } } catch (e) { alert("Restore failed. The text provided was not valid backup data."); } }
-
-        async function checkForUpdates(event, isManualCheck = false) {
-            if (event) event.preventDefault();
-            if (isManualCheck) alert('Checking for the latest version...');
-            
-            try {
-                const response = await fetch(VERSION_CHECK_URL + '?t=' + Date.now()); 
-                if (!response.ok) throw new Error('Network response was not ok');
-                const versionInfo = await response.json();
-
-                if (isNewerVersion(versionInfo.latestVersion, CURRENT_VERSION)) {
-                    let updateMessage = `A new version (${versionInfo.latestVersion}) is available!\n\n`;
-                    updateMessage += `You are currently using version ${CURRENT_VERSION}.\n\n`;
-                    updateMessage += `What's New:\n${versionInfo.releaseNotes}\n\n`;
-                    updateMessage += `Click OK to refresh and load the new version. (Your saved data will not be affected).`;
-                    
-                    if (confirm(updateMessage)) {
-                        window.location.reload();
-                    }
-                } else if (isManualCheck) {
-                    alert(`You are using the latest version (${CURRENT_VERSION}).`);
-                }
-            } catch (error) {
-                console.error('Update check failed:', error);
-                if (isManualCheck) alert('Could not check for updates. This might be due to network restrictions.');
-            }
-        }
-
-        function isNewerVersion(v1, v2) {
-            const parts1 = v1.split('.').map(Number);
-            const parts2 = v2.split('.').map(Number);
-            for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
-                const p1 = parts1[i] || 0;
-                const p2 = parts2[i] || 0;
-                if (p1 > p2) return true;
-                if (p1 < p2) return false;
-            }
-            return false;
-        }
     </script>
 </body>
 </html>
