@@ -28,7 +28,13 @@
         .btn { background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-right: 5px; } .btn-save { background-color: #28a745; }
         .deficiency-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--item-border); border-radius: 5px; margin-bottom: 5px; }
         .deficiency-list-item:hover { background-color: var(--item-hover-bg); }
-        .remove-btn { background-color: #dc3545; } .edit-btn { background-color: #ffc107; color: black; } .backup-btn { background-color: #28a745; } .restore-btn { background-color: #dc3545; }
+        .remove-btn { background-color: #dc3545; } .edit-btn { background-color: #ffc107; color: black; }
+        
+        /* --- THIS SECTION IS NOW FIXED --- */
+        .backup-btn { background-color: #28a745; color: white; }
+        .restore-btn { background-color: #dc3545; color: white; }
+        /* ---------------------------------- */
+
         .slide { position: relative; border: 1px solid var(--item-border); background: var(--container-bg); color: var(--text-color); width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .slide-header { background-color: #003366; color: white; text-align: center; padding: 1vw; font-size: 1.5vw; font-weight: bold; }
         .slide-body { padding: 1.5vw; font-size: 1.1vw; flex-grow: 1; white-space: pre-wrap; word-wrap: break-word; font-family: "Courier New", Courier, monospace; }
@@ -124,7 +130,6 @@
             updateSlidePreview();
         }
         
-        // ** THIS FUNCTION IS NOW FIXED **
         function updateSlidePreview() {
             const finalCause = (document.getElementById('editCauseCode').value || "").replace(/^[A-Z0-9]+:\s*/, '') || "[select cause code]";
             const correctiveAction = document.getElementById('editCapAction').value || "[insert process change]";
