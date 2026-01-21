@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>USAPM CAP Slide Generator (v2.2.1)</title>
+    <title>USAPM CAP Slide Generator (v2.2.2)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -21,7 +21,7 @@
         .dashboard-container { display: flex; gap: 20px; align-items: flex-start; }
         .form-panel { width: 55%; }
         .preview-panel { width: 45%; position: sticky; top: 20px; }
-        .container { max-width: 100%; padding: 20px; background: var(--container-bg); border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .container { max-width: 100%; padding: 20px; background: var(--container-bg); border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;}
         h1, h2, h3 { color: var(--header-color); border-bottom: 2px solid var(--item-border); padding-bottom: 10px; }
         textarea, input, select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid var(--input-border); font-size: 1rem; margin-bottom: 10px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
         body.dark-mode select { background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e0e0e0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
@@ -40,18 +40,8 @@
         .item-meta { font-size: 0.8rem; color: #666; margin-top: 5px; } body.dark-mode .item-meta { color: #aaa; }
         .filter-section { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
         .footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #888; }
-        .slide-watermark {
-            position: absolute;
-            bottom: 5px;
-            right: 10px;
-            font-size: 0.8vw;
-            color: rgba(0, 0, 0, 0.2);
-            font-family: "Courier New", Courier, monospace;
-            pointer-events: none;
-        }
-        body.dark-mode .slide-watermark {
-            color: rgba(255, 255, 255, 0.2);
-        }
+        .slide-watermark { position: absolute; bottom: 5px; right: 10px; font-size: 0.8vw; color: rgba(0, 0, 0, 0.2); font-family: "Courier New", Courier, monospace; pointer-events: none; }
+        body.dark-mode .slide-watermark { color: rgba(255, 255, 255, 0.2); }
     </style>
 </head>
 <body onload="initializeDashboard()">
@@ -63,30 +53,28 @@
                     <input type="hidden" id="currentId"><label>Deficiency Write-up:</label><textarea id="editWriteup" rows="4"></textarea><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input type="text" id="editTracking" placeholder="Tracking Number"><select id="editSeverity"><option>Minor</option><option>Significant</option><option>Critical</option></select></div><hr><h3>Root Cause & Corrective Action</h3><label>1. Cause Code Category:</label><select id="editCauseCategory" onchange="populateSubcategories(this.value)"></select><label>2. Cause Code Subcategory:</label><select id="editCauseSubcategory" onchange="populateCauseCodes(this.value)"></select><label>3. Specific Cause Code:</label><select id="editCauseCode"></select><label>Complete the sentence: "To address this, the unit will..."</label><textarea id="editCapAction" rows="3" placeholder="e.g., conduct monthly seatbelt inspections..."></textarea><label>Implementation Timeframe:</label><input list="timeframe-options" id="editCapTimeframe" placeholder="e.g., 90 days"><datalist id="timeframe-options"><option value="30 days"></option><option value="60 days"></option><option value="90 days"></option><option value="6 months"></option><option value="1 year"></option></datalist><h3>Validation & Closure</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input type="text" id="editValidation" placeholder="Validation Event (e.g., next exercise)"><input type="text" id="editMetric" placeholder="Success Metric (e.g., 100% compliance)"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Proposed Closure Action</label><input list="closure-actions" id="editClosureAction" value="request closure of"><datalist id="closure-actions"><option value="request closure of"></option></datalist></div><div><label>Closure Authority</label><input list="closure-authorities" id="editClosureAuthority" placeholder="Select or type..."><datalist id="closure-authorities"><option value="702 MXS/CC"></option><option value="2 MXG/CC"></option></datalist></div></div><button type="button" class="btn btn-save" onclick="saveDeficiency()">Save / Add New</button><button type="button" class="btn" onclick="clearForm()">Clear Form</button>
                 </form>
             </div>
-             <div class="container" style="margin-top: 20px;">
+             <div class="container">
                  <button type="button" class="collapsible">View General Closure Guidance</button>
                 <div class="guidance-content">
                     <h4>Table 1. Deficiencies Levied by Wing IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR) -> Accept (Sq/CC) -> Implement (OPR) -> <strong>Close (Sq/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR/Sq CC) -> Concur (BW/IG) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Group (All)</td><td>Propose (OPR) -> Accept (Gp/CC) -> Implement (OPR) -> <strong>Close (Gp/CC)</strong></td></tr></table>
                     <h4>Table 2. Deficiencies Levied by AFGSC/IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR/Sq CC) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR) -> Concur (Gp/CC) -> Concur (BW/IG) -> Accept (FAM) -> Implement (BW/CC) -> <strong>Close (AFGSC/IG)</strong></td></tr><tr><td>Group Minor</td><td>Propose (OPR/Gp CC) -> Accept (Gp/CC) -> Implement (OPR/Gp CC) -> <strong>Close (Gp/CC)</strong></td></tr></table>
                 </div>
             </div>
-             <div class="container" style="margin-top: 20px;">
+             <div class="container">
                 <h2>Deficiency List</h2>
                 <div class="filter-section"><input type="text" id="filterKeyword" oninput="renderDeficiencyList()" placeholder="Filter..."><select id="filterSeverity" onchange="renderDeficiencyList()"><option value="All Severities">All</option><option>Minor</option><option>Significant</option><option>Critical</option></select><select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select></div>
                 <div id="deficiencyListContainer"></div>
             </div>
-            <div class="container" style="margin-top: 20px;">
-                 <button type="button" class="collapsible">Backup & Restore</button>
-                <div class="guidance-content">
-                    <h3>How to Back Up Your Data</h3><ol><li>Click the "Create Backup" button.</li><li>A text box with all your data will appear. All text will be automatically selected.</li><li>Copy the selected text (Ctrl+C).</li><li>Open Notepad, paste the text (Ctrl+V), and save the file to a safe location.</li></ol>
-                    <h3>How to Restore Your Data</h3><ol><li>Open your saved backup .txt file and copy all of its contents.</li><li>Click the "Restore from Backup" button here.</li><li>A pop-up box will appear. Paste your backup text into the box and click "OK".</li></ol>
-                    <!-- THIS BLOCK IS NOW FIXED -->
-                    <div style="margin-top: 15px;">
-                        <button class="btn backup-btn" onclick="createBackup()">Create Backup</button>
-                        <button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button>
-                        <textarea id="backupData" style="display: none; width: 100%; margin-top: 15px;" rows="8" readonly></textarea>
-                    </div>
-                </div>
+            <!-- THIS BLOCK IS NOW FIXED -->
+            <div class="container">
+                <h3>Backup & Restore</h3>
+                <ol style="padding-left: 20px; margin-bottom: 15px;">
+                    <li><strong>To Back Up:</strong> Click "Create Backup", copy the text that appears.</li>
+                    <li><strong>To Restore:</strong> Click "Restore from Backup", paste text from a saved file.</li>
+                </ol>
+                <button class="btn backup-btn" onclick="createBackup()">Create Backup</button>
+                <button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button>
+                <textarea id="backupData" style="display: none; width: 100%; margin-top: 15px;" rows="8" readonly></textarea>
             </div>
             <div class="container footer">
                 Created by TSgt James Hulett | Version <span id="version-display"></span>
@@ -137,7 +125,7 @@
         function createBackup() { const data = localStorage.getItem('usapm_tool_deficiencies'); if (!data || data === '[]') { alert("There is no data to backup."); return; } const formattedData = JSON.stringify(JSON.parse(data), null, 2); const backupTextarea = document.getElementById('backupData'); backupTextarea.value = formattedData; backupTextarea.style.display = 'block'; backupTextarea.select(); document.execCommand('copy'); alert("Backup data created below and copied to clipboard. Paste this into a plain .txt file and save it."); }
         function restoreFromBackup() { const pastedText = prompt("Paste the entire contents of your backup file here:"); if (pastedText === null || pastedText.trim() === "") { alert("Restore cancelled."); return; } try { const data = JSON.parse(pastedText); if (Array.isArray(data)) { if (confirm("Are you sure you want to overwrite your current list with this backup? This cannot be undone.")) { localStorage.setItem('usapm_tool_deficiencies', JSON.stringify(data)); renderDeficiencyList(); clearForm(); alert("Restore successful!"); } } else { throw new Error("Data is not a valid array."); } } catch (e) { alert("Restore failed. The text provided was not valid backup data."); } }
 
-        const CURRENT_VERSION = "2.2.1";
+        const CURRENT_VERSION = "2.2.2";
         const VERSION_CHECK_URL = 'https://gist.githubusercontent.com/hulettjg/b2b6705b5fd829f4110440d2eba91f6c/raw/bc0f48fe73fa58f688eaa533c4aa769810865318/version.json';
 
         async function checkForUpdates(event, isManualCheck = false) {
