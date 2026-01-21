@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>USAPM CAP Slide Generator (v2.4)</title>
+    <title>USAPM CAP Slide Generator (v2.5.1)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,7 +12,12 @@
             <div class="container">
                 <div class="header-controls"><h1>CAP Data Entry</h1><div class="theme-switcher"><span>☀️</span><label class="switch"><input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()"><span class="slider round"></span></label><span>🌙</span></div></div>
                 <form id="dataForm">
-                    <input type="hidden" id="currentId"><label>Deficiency Write-up:</label><textarea id="editWriteup" rows="4"></textarea><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input type="text" id="editTracking" placeholder="Tracking Number"><select id="editSeverity"><option>Minor</option><option>Significant</option><option>Critical</option></select></div><hr><h3>Root Cause & Corrective Action</h3><label>1. Cause Code Category:</label><select id="editCauseCategory" onchange="populateSubcategories(this.value)"></select><label>2. Cause Code Subcategory:</label><select id="editCauseSubcategory" onchange="populateCauseCodes(this.value)"></select><label>3. Specific Cause Code:</label><select id="editCauseCode"></select><label>Complete the sentence: "To address this, the unit will..."</label><textarea id="editCapAction" rows="3" placeholder="e.g., conduct monthly seatbelt inspections..."></textarea><label>Implementation Timeframe:</label><input list="timeframe-options" id="editCapTimeframe" placeholder="e.g., 90 days"><datalist id="timeframe-options"><option value="30 days"></option><option value="60 days"></option><option value="90 days"></option><option value="6 months"></option><option value="1 year"></option></datalist><h3>Validation & Closure</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input type="text" id="editValidation" placeholder="Validation Event (e.g., next exercise)"><input type="text" id="editMetric" placeholder="Success Metric (e.g., 100% compliance)"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Proposed Closure Action</label><input list="closure-actions" id="editClosureAction" value="request closure of"><datalist id="closure-actions"><option value="request closure of"></option></datalist></div><div><label>Closure Authority</label><input list="closure-authorities" id="editClosureAuthority" placeholder="Select or type..."><datalist id="closure-authorities"><option value="702 MXS/CC"></option><option value="2 MXG/CC"></option></datalist></div></div><button type="button" class="btn btn-save" onclick="saveDeficiency()">Save / Add New</button><button type="button" class="btn" onclick="clearForm()">Clear Form</button>
+                    <input type="hidden" id="currentId"><label>Deficiency Write-up:</label><textarea id="editWriteup" rows="4"></textarea><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><input type="text" id="editTracking" placeholder="Tracking Number"><select id="editSeverity"><option>Minor</option><option>Significant</option><option>Critical</option></select></div>
+                    <label>Point of Contact (POC):</label>
+                    <input type="text" id="editPoc" placeholder="e.g., TSgt Smith">
+                    <hr style="margin: 20px 0; border-color: var(--item-border);"><h3 style="margin-top: 20px;">Root Cause & Corrective Action</h3><label>1. Cause Code Category:</label><select id="editCauseCategory" onchange="populateSubcategories(this.value)"></select><label>2. Cause Code Subcategory:</label><select id="editCauseSubcategory" onchange="populateCauseCodes(this.value)"></select><label>3. Specific Cause Code:</label><select id="editCauseCode"></select><label>Complete the sentence: "To address this, the unit will..."</label><textarea id="editCapAction" rows="3" placeholder="e.g., conduct monthly seatbelt inspections..."></textarea><label>Implementation Timeframe:</label><input list="timeframe-options" id="editCapTimeframe" placeholder="e.g., 90 days"><datalist id="timeframe-options"><option value="30 days"></option><option value="60 days"></option><option value="90 days"></option><option value="6 months"></option><option value="1 year"></option></datalist><h3 style="margin-top: 20px;">Validation & Closure</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><input type="text" id="editValidation" placeholder="Validation Event (e.g., next exercise)"><input type="text" id="editMetric" placeholder="Success Metric (e.g., 100% compliance)"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><div><label>Proposed Closure Action</label><input list="closure-actions" id="editClosureAction" value="request closure of"><datalist id="closure-actions"><option value="request closure of"></option></datalist></div><div><label>Closure Authority</label><input list="closure-authorities" id="editClosureAuthority" placeholder="Select or type..."><datalist id="closure-authorities"><option value="702 MXS/CC"></option><option value="2 MXG/CC"></option></datalist></div></div>
+                    <button type="button" class="btn btn-save" id="saveBtn" onclick="saveDeficiency()">Save / Add New</button>
+                    <button type="button" class="btn" onclick="clearForm()">Clear Form</button>
                 </form>
             </div>
              <div class="container">
@@ -24,7 +29,7 @@
             </div>
              <div class="container">
                 <h2>Deficiency List</h2>
-                <div class="filter-section"><input type="text" id="filterKeyword" oninput="renderDeficiencyList()" placeholder="Filter..."><select id="filterSeverity" onchange="renderDeficiencyList()"><option value="All Severities">All</option><option>Minor</option><option>Significant</option><option>Critical</option></select><select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select></div>
+                <div class="filter-section"><input type="text" id="filterKeyword" oninput="renderDeficiencyList()" placeholder="Filter by keyword..."><select id="filterSeverity" onchange="renderDeficiencyList()"><option value="All Severities">All</option><option>Minor</option><option>Significant</option><option>Critical</option></select><select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select></div>
                 <div id="deficiencyListContainer"></div>
             </div>
             <div class="container">
@@ -57,4 +62,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
