@@ -1,10 +1,11 @@
-// --- script.js v2.5.1 ---
+// --- script.js v2.5.2 ---
 
 const causeCodeHierarchy = { "Select a Category...":{},"Equipment/Tools (EQ)":{"Equipment/Tools":["EQ1: Equipment reliability...","EQ2: Inadequate/Unavailable equipment...","EQ3: Equipment/Tool Accountability inadequate"]},"Guidance (GD)":{"Guidance":["GD1: Guidance used was inadequate...","GD2: Guidance used conflicted...","GD3: Guidance used was obsolete...","GD4: Inspected unit guidance...","GD5: Other than inspected unit guidance"]},"Leadership/Supervision (LS)":{"Leadership/Supervision":["LS1: Supervisor/leadership involvement insufficient...","LS2: Ineffective communication","LS3: Decision-making process ineffective..."],"Work Environment":["LS4: Workforce effectiveness limited...","LS5: Physical working conditions not conducive...","LS6: Ops Tempo/Workload"],"Use of Resources":["LS7: Unit incorrectly prioritized...","LS8: Unit failed to adequately program..."]},"Resource Shortfall (RS)":{"Funding Shortfall":["RS1: Program shortfall (DAF level)","RS2: Program shortfall (MAJCOM/FLDCOM level)","RS3: Program shortfall (wing/delta/installation level)","RS4: Parent unit withheld funding"],"Personnel Shortfall":["RS5: Assigned personnel less than accepted averages...","RS6: Insufficient personnel due to TDY/deployment","RS7: Insufficient personnel due to medical profile","RS8: Insufficient personnel due to augmentee requirements...","RS9: Awaiting security clearance","RS14: Insufficient personnel due to PRP requirements"],"Equipment Shortfall":["RS10: Awaiting resupply","RS11: Not requisitioned","RS12: Maintenance","RS13: Deployed"]},"Safety (SE)":{"Aviation Safety":["SE1: Aviation Safety Program mgmt inadequate...","SE2: Selected aspects not implemented...","SE3: Supervisory support inadequate"],"Occupational Safety":["SE4: Occupational Safety Program mgmt inadequate...","SE5: Selected aspects not implemented...","SE6: Supervisory support inadequate"],"Space Safety":["SE7: Space Safety Program mgmt inadequate...","SE8: Selected aspects not implemented...","SE9: Supervisory support inadequate"],"Weapons Safety":["SE10: Weapons Safety Program mgmt inadequate...","SE11: Selected aspects not implemented...","SE12: Supervisory support inadequate"]},"Training (TR)":{"Program Management":["TR1: Training Program mgmt inadequate...","TR2: Training guidance/policy inadequate...","TR3: Training oversight inadequate...","TR4: Training support inadequate...","TR5: Controls/metrics inadequate..."],"Program Implementation":["TR6: Initial qualification inadequate...","TR7: Hands-on training inadequate...","TR8: Upgrade/certification inadequate...","TR9: Training Supervisory support inadequate...","TR10: Training evaluation tools inadequate...","TR11: Training documentation inadequate..."]},"Human Factors (HF)":{"Organizational Influences":["HF1: Ops tempo/Workload","HF2: Mission changes","HF3: Physical environment interfered..."],"Condition of Individual":["HF4: Attention management...","HF5: Emotional state interfered...","HF6: Inappropriate motivation...","HF7: Inappropriate substance use...","HF8: Fatigue","HF9: Unreported medical condition"],"Acts":["HF10: Skill-based errors...","HF11: Judgment/Decision-making errors...","HF12: Intentional violations..."]}};
     
 function applyTheme(theme) { if (theme === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('darkModeToggle').checked = true; } else { document.body.classList.remove('dark-mode'); document.getElementById('darkModeToggle').checked = false; } }
 function toggleDarkMode() { const isDark = document.getElementById('darkModeToggle').checked; const theme = isDark ? 'dark' : 'light'; localStorage.setItem('theme', theme); applyTheme(theme); }
     
+// MODIFIED: The startup logic is now fixed and reliable.
 function initializeDashboard() {
     const savedTheme = localStorage.getItem('theme');
     applyTheme(savedTheme === 'light' ? 'light' : 'dark');
@@ -15,14 +16,13 @@ function initializeDashboard() {
     document.getElementById('version-display').textContent = CURRENT_VERSION;
     document.getElementById('s_watermark').textContent = `v${CURRENT_VERSION}`;
     
-    if (!checkForShareLink()) {
-        checkForUpdates(null, false);
+    // This is the critical logic fix.
+    if (!checkForShareLink()) { // If a share link was NOT found...
+        checkForUpdates(null, false); // ...then check for updates.
+        clearForm(); // ...and clear the form for a new session.
     }
 
     renderDeficiencyList();
-    if (!window.location.hash) {
-        clearForm();
-    }
 }
     
 function updateSlidePreview() { const finalCause = (document.getElementById('editCauseCode').value || "").replace(/^[A-Z0-9]+: /,'') || "[select cause code]"; const correctiveAction = document.getElementById('editCapAction').value || "[insert process change]"; const timeframe = document.getElementById('editCapTimeframe').value || "(insert timeframe)"; const poc = document.getElementById('editPoc').value || "N/A"; const deficiencyStatement = `Regarding the deficiency: "${document.getElementById('editWriteup').value.trim() || "..."}"\nAssigned POC: ${poc}\n\n`; const finalCapStatement = `Through root cause analysis, the unit determined that this deficiency was caused by ${finalCause}. To address this, the unit will ${correctiveAction}. Our updated process will be tested and adjusted, as necessary, over the next ${timeframe}. Upon completion of this period, we will validate the CAP during ${document.getElementById('editValidation').value || "..."}. If there are ${document.getElementById('editMetric').value || "..."}, we will ${document.getElementById('editClosureAction').value} the deficiency at the ${document.getElementById('editClosureAuthority').value} level.`; document.getElementById('s_header').textContent = document.getElementById('editTracking').value || "TRACKING NUMBER"; document.getElementById('s_body').textContent = deficiencyStatement + finalCapStatement; }
@@ -37,7 +37,7 @@ function saveDeficiency() { let t = JSON.parse(localStorage.getItem('usapm_tool_
     
 function removeDeficiency(t) { if (!confirm('Are you sure you want to permanently delete this deficiency?')) return; let e = JSON.parse(localStorage.getItem('usapm_tool_deficiencies')) || []; e = e.filter(e => e.id !== t), localStorage.setItem('usapm_tool_deficiencies', JSON.stringify(e)), renderDeficiencyList(), clearForm() }
 
-function clearForm() { document.getElementById('dataForm').reset(), document.getElementById('currentId').value = '', populateCategories(), updateSlidePreview(); document.getElementById('saveBtn').textContent = 'Save / Add New'; }
+function clearForm() { document.getElementById('dataForm').reset(); document.getElementById('currentId').value = ''; populateCategories(); updateSlidePreview(); document.getElementById('saveBtn').textContent = 'Save / Add New'; }
 function createBackup() { const data = localStorage.getItem('usapm_tool_deficiencies'); if (!data || data === '[]') { alert("There is no data to backup."); return; } const formattedData = JSON.stringify(JSON.parse(data), null, 2); const backupTextarea = document.getElementById('backupData'); backupTextarea.value = formattedData; backupTextarea.style.display = 'block'; backupTextarea.select(); document.execCommand('copy'); alert("Backup data created below and copied to clipboard. Paste this into a plain .txt file and save it."); }
 function restoreFromBackup() { const pastedText = prompt("Paste the entire contents of your backup file here:"); if (pastedText === null || pastedText.trim() === "") { alert("Restore cancelled."); return; } try { const data = JSON.parse(pastedText); if (Array.isArray(data)) { if (confirm("Are you sure you want to overwrite your current list with this backup? This cannot be undone.")) { localStorage.setItem('usapm_tool_deficiencies', JSON.stringify(data)); renderDeficiencyList(); clearForm(); alert("Restore successful!"); } } else { throw new Error("Data is not a valid array."); } } catch (e) { alert("Restore failed. The text provided was not valid backup data."); } }
 
@@ -68,16 +68,16 @@ function checkForShareLink() {
                 document.getElementById('saveBtn').textContent = 'Update Shared Deficiency';
             }
             history.pushState("", document.title, window.location.pathname + window.location.search);
-            return true;
+            return true; // We found and processed a link, return true.
         } catch (e) {
             console.error("Failed to parse share link:", e);
             return false;
         }
     }
-    return false;
+    return false; // No link found, return false.
 }
 
-const CURRENT_VERSION = "2.5.1";
+const CURRENT_VERSION = "2.5.2";
 const VERSION_CHECK_URL = 'https://gist.githubusercontent.com/hulettjg/b2b6705b5fd829f4110440d2eba91f6c/raw/bc0f48fe73fa58f688eaa533c4aa769810865318/version.json';
 
 async function checkForUpdates(event, isManualCheck = false) { if (event) event.preventDefault(); if (isManualCheck) alert('Checking for the latest version...'); try { const response = await fetch(VERSION_CHECK_URL + '?t=' + Date.now()); if (!response.ok) throw new Error('Network response was not ok'); const versionInfo = await response.json(); if (isNewerVersion(versionInfo.latestVersion, CURRENT_VERSION)) { let updateMessage = `A new version (${versionInfo.latestVersion}) is available!\n\n`; updateMessage += `You are currently using version ${CURRENT_VERSION}.\n\n`; updateMessage += `What's New:\n${versionInfo.releaseNotes}\n\n`; updateMessage += `Click OK to refresh and load the new version.`; if (confirm(updateMessage)) { window.location.reload(); } } else if (isManualCheck) { alert(`You are using the latest version (${CURRENT_VERSION}).`); } } catch (error) { console.error('Update check failed:', error); if (isManualCheck) alert('Could not check for updates. This might be due to network restrictions.'); } }
