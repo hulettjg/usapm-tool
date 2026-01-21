@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>USAPM CAP Slide Generator (v2.1)</title>
+    <title>USAPM CAP Slide Generator (v2.2.1)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -40,6 +40,18 @@
         .item-meta { font-size: 0.8rem; color: #666; margin-top: 5px; } body.dark-mode .item-meta { color: #aaa; }
         .filter-section { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
         .footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #888; }
+        .slide-watermark {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 0.8vw;
+            color: rgba(0, 0, 0, 0.2);
+            font-family: "Courier New", Courier, monospace;
+            pointer-events: none;
+        }
+        body.dark-mode .slide-watermark {
+            color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body onload="initializeDashboard()">
@@ -68,20 +80,27 @@
                 <div class="guidance-content">
                     <h3>How to Back Up Your Data</h3><ol><li>Click the "Create Backup" button.</li><li>A text box with all your data will appear. All text will be automatically selected.</li><li>Copy the selected text (Ctrl+C).</li><li>Open Notepad, paste the text (Ctrl+V), and save the file to a safe location.</li></ol>
                     <h3>How to Restore Your Data</h3><ol><li>Open your saved backup .txt file and copy all of its contents.</li><li>Click the "Restore from Backup" button here.</li><li>A pop-up box will appear. Paste your backup text into the box and click "OK".</li></ol>
-                    <button <div style="margin-top: 15px;">
-    <button class="btn backup-btn" onclick="createBackup()">Create Backup</button>
-    <button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button>
-    <textarea id="backupData" style="display: none; width: 100%; margin-top: 15px;" rows="8" readonly></textarea>
-</div>
-
+                    <!-- THIS BLOCK IS NOW FIXED -->
+                    <div style="margin-top: 15px;">
+                        <button class="btn backup-btn" onclick="createBackup()">Create Backup</button>
+                        <button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button>
+                        <textarea id="backupData" style="display: none; width: 100%; margin-top: 15px;" rows="8" readonly></textarea>
+                    </div>
                 </div>
             </div>
-            <div class="container footer">Created by TSgt James Hulett | Version 2.1</div>
+            <div class="container footer">
+                Created by TSgt James Hulett | Version <span id="version-display"></span>
+                | <a href="#" onclick="checkForUpdates(event, true)">Check for Updates</a>
+            </div>
         </div>
         <div class="preview-panel">
             <div class="container">
                 <h3>Live CAP Slide Preview</h3>
-                <div id="slide-to-capture" class="slide"><div class="slide-header" id="s_header">TRACKING NUMBER</div><div class="slide-body" id="s_body">Awaiting input...</div></div>
+                <div id="slide-to-capture" class="slide">
+                    <div class="slide-header" id="s_header">TRACKING NUMBER</div>
+                    <div class="slide-body" id="s_body">Awaiting input...</div>
+                    <div class="slide-watermark" id="s_watermark"></div>
+                </div>
                 <button class="btn" onclick="downloadSlide()" style="width:100%; margin-top: 20px; font-size: 1rem; background-color: #6f42c1;">Download Slide</button>
             </div>
         </div>
@@ -98,6 +117,11 @@
             populateCategories();
             document.querySelectorAll('#dataForm input, #dataForm textarea, #dataForm select').forEach(el => el.addEventListener('input', updateSlidePreview));
             document.querySelectorAll(".collapsible").forEach(coll => { coll.addEventListener("click", function() { this.classList.toggle("active"); const content = this.nextElementSibling; if (content.style.maxHeight) { content.style.maxHeight = null; } else { content.style.maxHeight = content.scrollHeight + "px"; } }); });
+            
+            document.getElementById('version-display').textContent = CURRENT_VERSION;
+            document.getElementById('s_watermark').textContent = `v${CURRENT_VERSION}`;
+            checkForUpdates(null, false);
+
             renderDeficiencyList();
             updateSlidePreview();
         }
@@ -112,7 +136,45 @@
         function clearForm() { document.getElementById('dataForm').reset(), document.getElementById('currentId').value = '', populateCategories(), updateSlidePreview() }
         function createBackup() { const data = localStorage.getItem('usapm_tool_deficiencies'); if (!data || data === '[]') { alert("There is no data to backup."); return; } const formattedData = JSON.stringify(JSON.parse(data), null, 2); const backupTextarea = document.getElementById('backupData'); backupTextarea.value = formattedData; backupTextarea.style.display = 'block'; backupTextarea.select(); document.execCommand('copy'); alert("Backup data created below and copied to clipboard. Paste this into a plain .txt file and save it."); }
         function restoreFromBackup() { const pastedText = prompt("Paste the entire contents of your backup file here:"); if (pastedText === null || pastedText.trim() === "") { alert("Restore cancelled."); return; } try { const data = JSON.parse(pastedText); if (Array.isArray(data)) { if (confirm("Are you sure you want to overwrite your current list with this backup? This cannot be undone.")) { localStorage.setItem('usapm_tool_deficiencies', JSON.stringify(data)); renderDeficiencyList(); clearForm(); alert("Restore successful!"); } } else { throw new Error("Data is not a valid array."); } } catch (e) { alert("Restore failed. The text provided was not valid backup data."); } }
+
+        const CURRENT_VERSION = "2.2.1";
+        const VERSION_CHECK_URL = 'https://gist.githubusercontent.com/hulettjg/b2b6705b5fd829f4110440d2eba91f6c/raw/bc0f48fe73fa58f688eaa533c4aa769810865318/version.json';
+
+        async function checkForUpdates(event, isManualCheck = false) {
+            if (event) event.preventDefault();
+            if (isManualCheck) alert('Checking for the latest version...');
+            try {
+                const response = await fetch(VERSION_CHECK_URL + '?t=' + Date.now());
+                if (!response.ok) throw new Error('Network response was not ok');
+                const versionInfo = await response.json();
+                if (isNewerVersion(versionInfo.latestVersion, CURRENT_VERSION)) {
+                    let updateMessage = `A new version (${versionInfo.latestVersion}) is available!\n\n`;
+                    updateMessage += `You are currently using version ${CURRENT_VERSION}.\n\n`;
+                    updateMessage += `What's New:\n${versionInfo.releaseNotes}\n\n`;
+                    updateMessage += `Click OK to refresh and load the new version.`;
+                    if (confirm(updateMessage)) {
+                        window.location.reload();
+                    }
+                } else if (isManualCheck) {
+                    alert(`You are using the latest version (${CURRENT_VERSION}).`);
+                }
+            } catch (error) {
+                console.error('Update check failed:', error);
+                if (isManualCheck) alert('Could not check for updates. This might be due to network restrictions.');
+            }
+        }
+
+        function isNewerVersion(v1, v2) {
+            const parts1 = v1.split('.').map(Number);
+            const parts2 = v2.split('.').map(Number);
+            for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+                const p1 = parts1[i] || 0;
+                const p2 = parts2[i] || 0;
+                if (p1 > p2) return true;
+                if (p1 < p2) return false;
+            }
+            return false;
+        }
     </script>
 </body>
 </html>
-
