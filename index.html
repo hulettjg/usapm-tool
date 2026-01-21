@@ -68,7 +68,12 @@
                 <div class="guidance-content">
                     <h3>How to Back Up Your Data</h3><ol><li>Click the "Create Backup" button.</li><li>A text box with all your data will appear. All text will be automatically selected.</li><li>Copy the selected text (Ctrl+C).</li><li>Open Notepad, paste the text (Ctrl+V), and save the file to a safe location.</li></ol>
                     <h3>How to Restore Your Data</h3><ol><li>Open your saved backup .txt file and copy all of its contents.</li><li>Click the "Restore from Backup" button here.</li><li>A pop-up box will appear. Paste your backup text into the box and click "OK".</li></ol>
-                    <button class="btn backup-btn" onclick="createBackup()">Create Backup</button><button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button><textarea id="backupData" style="display: none; width: 100%; margin-top: 10px;" rows="8" readonly></textarea>
+                    <button <div style="margin-top: 15px;">
+    <button class="btn backup-btn" onclick="createBackup()">Create Backup</button>
+    <button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button>
+    <textarea id="backupData" style="display: none; width: 100%; margin-top: 15px;" rows="8" readonly></textarea>
+</div>
+
                 </div>
             </div>
             <div class="container footer">Created by TSgt James Hulett | Version 2.1</div>
@@ -110,3 +115,4 @@
     </script>
 </body>
 </html>
+
