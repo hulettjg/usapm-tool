@@ -1,4 +1,4 @@
-// --- script.js v2.6 ---
+// --- script.js v2.6.1 ---
 
 const causeCodeHierarchy = { "Select a Category...":{},"Equipment/Tools (EQ)":{"Equipment/Tools":["EQ1: Equipment reliability...","EQ2: Inadequate/Unavailable equipment...","EQ3: Equipment/Tool Accountability inadequate"]},"Guidance (GD)":{"Guidance":["GD1: Guidance used was inadequate...","GD2: Guidance used conflicted...","GD3: Guidance used was obsolete...","GD4: Inspected unit guidance...","GD5: Other than inspected unit guidance"]},"Leadership/Supervision (LS)":{"Leadership/Supervision":["LS1: Supervisor/leadership involvement insufficient...","LS2: Ineffective communication","LS3: Decision-making process ineffective..."],"Work Environment":["LS4: Workforce effectiveness limited...","LS5: Physical working conditions not conducive...","LS6: Ops Tempo/Workload"],"Use of Resources":["LS7: Unit incorrectly prioritized...","LS8: Unit failed to adequately program..."]},"Resource Shortfall (RS)":{"Funding Shortfall":["RS1: Program shortfall (DAF level)","RS2: Program shortfall (MAJCOM/FLDCOM level)","RS3: Program shortfall (wing/delta/installation level)","RS4: Parent unit withheld funding"],"Personnel Shortfall":["RS5: Assigned personnel less than accepted averages...","RS6: Insufficient personnel due to TDY/deployment","RS7: Insufficient personnel due to medical profile","RS8: Insufficient personnel due to augmentee requirements...","RS9: Awaiting security clearance","RS14: Insufficient personnel due to PRP requirements"],"Equipment Shortfall":["RS10: Awaiting resupply","RS11: Not requisitioned","RS12: Maintenance","RS13: Deployed"]},"Safety (SE)":{"Aviation Safety":["SE1: Aviation Safety Program mgmt inadequate...","SE2: Selected aspects not implemented...","SE3: Supervisory support inadequate"],"Occupational Safety":["SE4: Occupational Safety Program mgmt inadequate...","SE5: Selected aspects not implemented...","SE6: Supervisory support inadequate"],"Space Safety":["SE7: Space Safety Program mgmt inadequate...","SE8: Selected aspects not implemented...","SE9: Supervisory support inadequate"],"Weapons Safety":["SE10: Weapons Safety Program mgmt inadequate...","SE11: Selected aspects not implemented...","SE12: Supervisory support inadequate"]},"Training (TR)":{"Program Management":["TR1: Training Program mgmt inadequate...","TR2: Training guidance/policy inadequate...","TR3: Training oversight inadequate...","TR4: Training support inadequate...","TR5: Controls/metrics inadequate..."],"Program Implementation":["TR6: Initial qualification inadequate...","TR7: Hands-on training inadequate...","TR8: Upgrade/certification inadequate...","TR9: Training Supervisory support inadequate...","TR10: Training evaluation tools inadequate...","TR11: Training documentation inadequate..."]},"Human Factors (HF)":{"Organizational Influences":["HF1: Ops tempo/Workload","HF2: Mission changes","HF3: Physical environment interfered..."],"Condition of Individual":["HF4: Attention management...","HF5: Emotional state interfered...","HF6: Inappropriate motivation...","HF7: Inappropriate substance use...","HF8: Fatigue","HF9: Unreported medical condition"],"Acts":["HF10: Skill-based errors...","HF11: Judgment/Decision-making errors...","HF12: Intentional violations..."]}};
     
@@ -46,7 +46,39 @@ function clearForm() { document.getElementById('dataForm').reset(); document.get
 function createBackup() { const data = localStorage.getItem('usapm_tool_deficiencies'); if (!data || data === '[]') { alert("There is no data to backup."); return; } const formattedData = JSON.stringify(JSON.parse(data), null, 2); const backupTextarea = document.getElementById('backupData'); backupTextarea.value = formattedData; backupTextarea.style.display = 'block'; backupTextarea.select(); document.execCommand('copy'); alert("Backup data created below and copied to clipboard. Paste this into a plain .txt file and save it."); }
 function restoreFromBackup() { const pastedText = prompt("Paste the entire contents of your backup file here:"); if (pastedText === null || pastedText.trim() === "") { alert("Restore cancelled."); return; } try { const data = JSON.parse(pastedText); if (Array.isArray(data)) { if (confirm("Are you sure you want to overwrite your current list with this backup? This cannot be undone.")) { localStorage.setItem('usapm_tool_deficiencies', JSON.stringify(data)); renderDeficiencyList(); clearForm(); alert("Restore successful!"); } } else { throw new Error("Data is not a valid array."); } } catch (e) { alert("Restore failed. The text provided was not valid backup data."); } }
 
-function shareDeficiency(id) { const deficiencies = JSON.parse(localStorage.getItem('usapm_tool_deficiencies')) || []; const deficiency = deficiencies.find(d => d.id === id); if (!deficiency) return; const data = JSON.stringify(deficiency); const encodedData = btoa(data); const url = new URL(window.location); url.hash = encodedData; navigator.clipboard.writeText(url.href).then(() => { alert('A shareable link for this deficiency has been copied to your clipboard!'); }, () => { alert('Could not copy link. Please copy it manually:\n' + url.href); }); }
+// MODIFIED: This function is now robust with a try/catch fallback.
+function shareDeficiency(id) {
+    const deficiencies = JSON.parse(localStorage.getItem('usapm_tool_deficiencies')) || [];
+    const deficiency = deficiencies.find(d => d.id === id);
+    if (!deficiency) return;
+
+    const data = JSON.stringify(deficiency);
+    const encodedData = btoa(data);
+    const url = new URL(window.location);
+    url.hash = encodedData;
+    const shareUrl = url.href;
+    const linkText = deficiency.trackingNumber || "Untitled Deficiency";
+
+    try {
+        // Modern "Smart Clipboard" method
+        const htmlBlob = new Blob([`<a href="${shareUrl}">${linkText}</a>`], { type: 'text/html' });
+        const textBlob = new Blob([shareUrl], { type: 'text/plain' });
+        const clipboardItem = new ClipboardItem({
+            'text/html': htmlBlob,
+            'text/plain': textBlob,
+        });
+
+        navigator.clipboard.write([clipboardItem]).then(() => {
+            alert(`A rich-text link for "${linkText}" has been copied to your clipboard!`);
+        });
+    } catch (e) {
+        // Fallback for insecure contexts or older browsers
+        console.error('Failed to use modern clipboard API, falling back to basic text copy.', e);
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert('A shareable link for this deficiency has been copied to your clipboard!');
+        });
+    }
+}
     
 function checkForShareLink() {
     if (window.location.hash) {
@@ -55,7 +87,6 @@ function checkForShareLink() {
             const decodedData = atob(encodedData);
             const deficiency = JSON.parse(decodedData);
             if (confirm('A shared deficiency has been detected. Do you want to load it into the form?')) {
-                // --- NEW: Lock the manager's fields ---
                 setFormState(false); 
                 document.getElementById('currentId').value = deficiency.id || Date.now();
                 document.getElementById('editWriteup').value = deficiency.writeup || "";
@@ -86,7 +117,6 @@ function checkForShareLink() {
     return false;
 }
 
-// --- NEW: Function to enable/disable form fields ---
 function setFormState(isEnabled) {
     document.getElementById('editWriteup').disabled = !isEnabled;
     document.getElementById('editTracking').disabled = !isEnabled;
@@ -94,7 +124,7 @@ function setFormState(isEnabled) {
     document.getElementById('editPoc').disabled = !isEnabled;
 }
 
-const CURRENT_VERSION = "2.6";
+const CURRENT_VERSION = "2.6.1";
 const VERSION_CHECK_URL = 'https://gist.githubusercontent.com/hulettjg/b2b6705b5fd829f4110440d2eba91f6c/raw/bc0f48fe73fa58f688eaa533c4aa769810865318/version.json';
 
 async function checkForUpdates(event, isManualCheck = false) { if (event) event.preventDefault(); if (isManualCheck) alert('Checking for the latest version...'); try { const response = await fetch(VERSION_CHECK_URL + '?t=' + Date.now()); if (!response.ok) throw new Error('Network response was not ok'); const versionInfo = await response.json(); if (isNewerVersion(versionInfo.latestVersion, CURRENT_VERSION)) { let updateMessage = `A new version (${versionInfo.latestVersion}) is available!\n\n`; updateMessage += `You are currently using version ${CURRENT_VERSION}.\n\n`; updateMessage += `What's New:\n${versionInfo.releaseNotes}\n\n`; updateMessage += `Click OK to refresh and load the new version.`; if (confirm(updateMessage)) { window.location.reload(); } } else if (isManualCheck) { alert(`You are using the latest version (${CURRENT_VERSION}).`); } } catch (error) { console.error('Update check failed:', error); if (isManualCheck) alert('Could not check for updates. This might be due to network restrictions.'); } }
