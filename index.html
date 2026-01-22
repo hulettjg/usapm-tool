@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>USAPM CAP Slide Generator (v2.8)</title>
+    <title>USAPM CAP Slide Generator (v2.9)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -21,13 +21,6 @@
                 </form>
             </div>
              <div class="container">
-                 <button type="button" class="collapsible">View General Closure Guidance</button>
-                <div class="guidance-content">
-                    <h4>Table 1. Deficiencies Levied by Wing IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR) -> Accept (Sq/CC) -> Implement (OPR) -> <strong>Close (Sq/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR/Sq CC) -> Concur (BW/IG) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Group (All)</td><td>Propose (OPR) -> Accept (Gp/CC) -> Implement (OPR) -> <strong>Close (Gp/CC)</strong></td></tr></table>
-                    <h4>Table 2. Deficiencies Levied by AFGSC/IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR/Sq CC) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR) -> Concur (Gp/CC) -> Concur (BW/IG) -> Accept (FAM) -> Implement (BW/CC) -> <strong>Close (AFGSC/IG)</strong></td></tr><tr><td>Group Minor</td><td>Propose (OPR/Gp CC) -> Accept (Gp/CC) -> Implement (OPR/Gp CC) -> <strong>Close (Gp/CC)</strong></td></tr></table>
-                </div>
-            </div>
-             <div class="container">
                 <h2>Deficiency List</h2>
                 <div class="filter-section">
                     <input type="text" id="filterKeyword" oninput="renderDeficiencyList()" placeholder="Filter by keyword...">
@@ -36,20 +29,6 @@
                     <select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select>
                 </div>
                 <div id="deficiencyListContainer"></div>
-            </div>
-            <div class="container">
-                <h3>Backup & Restore</h3>
-                <ol style="padding-left: 20px; margin-bottom: 15px;">
-                    <li><strong>To Back Up:</strong> Click "Create Backup", copy the text that appears.</li>
-                    <li><strong>To Restore:</strong> Click "Restore from Backup", paste text from a saved file.</li>
-                </ol>
-                <button class="btn backup-btn" onclick="createBackup()">Create Backup</button>
-                <button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button>
-                <textarea id="backupData" style="display: none; width: 100%; margin-top: 15px;" rows="8" readonly></textarea>
-            </div>
-            <div class="container footer">
-                Created by TSgt James Hulett | Version <span id="version-display"></span>
-                | <a href="#" onclick="checkForUpdates(event, true)">Check for Updates</a>
             </div>
         </div>
         <div class="preview-panel">
@@ -61,6 +40,27 @@
                     <div class="slide-watermark" id="s_watermark"></div>
                 </div>
                 <button class="btn" onclick="downloadSlide()" style="width:100%; margin-top: 20px; font-size: 1rem; background-color: #6f42c1;">Download Slide</button>
+            </div>
+            <!-- NEW ADMIN PANEL -->
+            <div class="container">
+                <h3>Admin Panel</h3>
+                 <button type="button" class="collapsible">General Guidance</button>
+                <div class="guidance-content">
+                    <h4>Table 1. Deficiencies Levied by Wing IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR) -> Accept (Sq/CC) -> Implement (OPR) -> <strong>Close (Sq/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR/Sq CC) -> Concur (BW/IG) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Group (All)</td><td>Propose (OPR) -> Accept (Gp/CC) -> Implement (OPR) -> <strong>Close (Gp/CC)</strong></td></tr></table>
+                    <h4>Table 2. Deficiencies Levied by AFGSC/IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR/Sq CC) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR) -> Concur (Gp/CC) -> Concur (BW/IG) -> Accept (FAM) -> Implement (BW/CC) -> <strong>Close (AFGSC/IG)</strong></td></tr><tr><td>Group Minor</td><td>Propose (OPR/Gp CC) -> Accept (Gp/CC) -> Implement (OPR/Gp CC) -> <strong>Close (Gp/CC)</strong></td></tr></table>
+                </div>
+                <hr style="margin: 20px 0; border-color: var(--item-border);">
+                <button type="button" class="collapsible">Backup & Restore</button>
+                <div class="guidance-content">
+                    <p>Use these tools to manually save or load your entire deficiency list.</p>
+                    <button class="btn backup-btn" onclick="createBackup()">Create Backup</button>
+                    <button class="btn restore-btn" onclick="restoreFromBackup()">Restore from Backup</button>
+                    <textarea id="backupData" style="display: none; width: 100%; margin-top: 15px;" rows="8" readonly></textarea>
+                </div>
+            </div>
+            <div class="container footer">
+                Created by TSgt James Hulett | Version <span id="version-display"></span>
+                | <a href="#" onclick="checkForUpdates(event, true)">Check for Updates</a>
             </div>
         </div>
     </div>
