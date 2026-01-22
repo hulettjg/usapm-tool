@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>USAPM CAP Slide Generator (v2.7)</title>
+    <title>USAPM CAP Slide Generator (v2.8)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -32,8 +32,7 @@
                 <div class="filter-section">
                     <input type="text" id="filterKeyword" oninput="renderDeficiencyList()" placeholder="Filter by keyword...">
                     <select id="filterSeverity" onchange="renderDeficiencyList()"><option value="All Severities">All Severities</option><option>Minor</option><option>Significant</option><option>Critical</option></select>
-                    <!-- NEW: Filter by Status -->
-                    <select id="filterStatus" onchange="renderDeficiencyList()"><option value="All">All Statuses</option><option value="New">New</option><option value="Pending">Pending</option><option value="Completed">Completed</option></select>
+                    <select id="filterStatus" onchange="renderDeficiencyList()"><option value="All">All Statuses</option><option value="New">New</option><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Revisions">Revisions Needed</option></select>
                     <select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select>
                 </div>
                 <div id="deficiencyListContainer"></div>
