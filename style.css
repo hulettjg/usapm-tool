@@ -56,6 +56,10 @@ body.dark-mode select { background-image: url('data:image/svg+xml;charset=US-ASC
 .backup-btn:hover { background-color: #138496; }
 .restore-btn { background-color: #6c757d; color: white; }
 .restore-btn:hover { background-color: #5a6268; }
+.revision-btn { background-color: var(--status-revisions); color: white; }
+.revision-btn:hover { background-color: #e66a00; }
+.status-btn { background-color: #6c757d; }
+.status-btn:hover { background-color: #5a6268; }
 .slide { position: relative; border: 1px solid var(--item-border); background: var(--container-bg); color: var(--text-color); width: 100%; display: flex; flex-direction: column; box-shadow: 0 6px 18px var(--shadow-2); border-radius: 8px; overflow: hidden; }
 .slide-header { background-color: #003366; color: white; text-align: center; padding: 1.2vw; font-size: 1.6vw; font-weight: bold; }
 .slide-body { padding: 1.8vw; font-size: 1.2vw; flex-grow: 1; white-space: pre-wrap; word-wrap: break-word; font-family: "Courier New", Courier, monospace; line-height: 1.4; min-height: 250px; }
