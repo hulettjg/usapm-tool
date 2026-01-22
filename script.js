@@ -55,14 +55,15 @@ function renderDeficiencyList() {
         itemDiv.className = 'deficiency-list-item';
         let buttons = `<button class="btn" onclick="shareDeficiency(${item.id})" style="background-color: #6f42c1;">Share</button>`;
         if (status === 'Completed') {
-            buttons += `<button class="btn" onclick="requestRevision(${item.id})" style="background-color: #fd7e14; color: white;">Revisions</button>`;
+            buttons += `<button class="btn revision-btn" onclick="requestRevision(${item.id})">Revisions</button>`;
         }
+        buttons += `<button class="btn status-btn" onclick="setManualStatus(${item.id})">Set Status</button>`;
         buttons += `<button class="btn edit-btn" onclick="loadDeficiency(${item.id})">Edit</button><button class="btn remove-btn" onclick="removeDeficiency(${item.id})">Delete</button>`;
         
         itemDiv.innerHTML = `<div>
                                 <span><strong>${item.trackingNumber}</strong>: ${(item.writeup || '').split('\n')[0]}</span>
                                 <div class="item-meta">
-                                    <span class="status-indicator status-${status.toLowerCase()}">${status}</span> | POC: ${item.poc || 'N/A'} | Last Edited: ${lastEditedDate}
+                                    <span class="status-indicator status-${status.toLowerCase().replace(' ', '')}">${status}</span> | POC: ${item.poc || 'N/A'} | Last Edited: ${lastEditedDate}
                                 </div>
                              </div>
                              <div>${buttons}</div>`;
@@ -133,6 +134,7 @@ function shareDeficiency(id) {
         navigator.clipboard.writeText(shareUrl).then(() => { alert('A shareable link for this deficiency has been copied to your clipboard!'); });
     }
 }
+
 function requestRevision(id) {
     let deficiencies = JSON.parse(localStorage.getItem('usapm_tool_deficiencies')) || [];
     const deficiencyIndex = deficiencies.findIndex(d => d.id === id);
@@ -143,20 +145,23 @@ function requestRevision(id) {
     renderDeficiencyList();
 
     const deficiency = deficiencies[deficiencyIndex];
-    const data = JSON.stringify(deficiency);
-    const encodedData = btoa(data);
-    const url = new URL(window.location);
-    url.hash = encodedData;
-    const shareUrl = url.href;
-    const linkText = deficiency.trackingNumber || "Untitled Deficiency";
+    shareDeficiency(deficiency.id); // Re-use the share function to copy the link
+    alert(`Status set to 'Revisions Needed'. A new share link has been copied. Send this back to the user.`);
+}
 
-    try {
-        const htmlBlob = new Blob([`<a href="${shareUrl}">${linkText}</a>`], { type: 'text/html' });
-        const textBlob = new Blob([shareUrl], { type: 'text/plain' });
-        const clipboardItem = new ClipboardItem({ 'text/html': htmlBlob, 'text/plain': textBlob });
-        navigator.clipboard.write([clipboardItem]).then(() => { alert(`A revision request link for "${linkText}" has been copied. Send this back to the user.`); });
-    } catch (e) {
-        navigator.clipboard.writeText(shareUrl).then(() => { alert('A revision request link for this deficiency has been copied!'); });
+function setManualStatus(id) {
+    let deficiencies = JSON.parse(localStorage.getItem('usapm_tool_deficiencies')) || [];
+    const deficiencyIndex = deficiencies.findIndex(d => d.id === id);
+    if (deficiencyIndex === -1) return;
+
+    const newStatus = prompt("Enter new status (New, Pending, Completed, Revisions):");
+    const validStatuses = ['New', 'Pending', 'Completed', 'Revisions'];
+    if (newStatus && validStatuses.includes(newStatus)) {
+        deficiencies[deficiencyIndex].status = newStatus;
+        localStorage.setItem('usapm_tool_deficiencies', JSON.stringify(deficiencies));
+        renderDeficiencyList();
+    } else if (newStatus !== null) {
+        alert("Invalid status. Please use one of the following: New, Pending, Completed, Revisions");
     }
 }
     
