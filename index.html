@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>USAPM CAP Slide Generator (v3.0)</title>
+    <title>USAPM CAP Slide Generator (v3.1)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -28,7 +28,8 @@
                     <select id="filterStatus" onchange="renderDeficiencyList()"><option value="All">All Statuses</option><option value="New">New</option><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Revisions">Revisions Needed</option></select>
                     <select id="sortBy" onchange="renderDeficiencyList()"><option value="date-newest">Sort: Last Edited (Newest)</option><option value="date-oldest">Sort: Last Edited (Oldest)</option><option value="severity">Sort: Severity</option><option value="tracking-az">Sort: Tracking #</option></select>
                 </div>
-                <div id="deficiencyListContainer"></div>
+                <div><label><input type="checkbox" id="hideCompleted" onchange="renderDeficiencyList()"> Hide Completed</label></div>
+                <div id="deficiencyListContainer" style="margin-top: 15px;"></div>
             </div>
         </div>
         <div class="preview-panel">
@@ -43,7 +44,7 @@
             </div>
             <div class="container">
                 <h3>Admin Tools</h3>
-                <button type="button" class="collapsible">General Guidance</button>
+                 <button type="button" class="collapsible">General Guidance</button>
                 <div class="guidance-content">
                     <h4>Table 1. Deficiencies Levied by Wing IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR) -> Accept (Sq/CC) -> Implement (OPR) -> <strong>Close (Sq/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR/Sq CC) -> Concur (BW/IG) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Group (All)</td><td>Propose (OPR) -> Accept (Gp/CC) -> Implement (OPR) -> <strong>Close (Gp/CC)</strong></td></tr></table>
                     <h4>Table 2. Deficiencies Levied by AFGSC/IG</h4><table><tr><th>Type</th><th>Process Step</th></tr><tr><td>Squadron Minor</td><td>Propose (OPR/Sq CC) -> Accept (Gp/CC) -> Implement (OPR/Sq CC) -> <strong>Close (Gp/CC)</strong></td></tr><tr><td>Squadron Critical/Significant</td><td>Propose (OPR) -> Concur (Gp/CC) -> Concur (BW/IG) -> Accept (FAM) -> Implement (BW/CC) -> <strong>Close (AFGSC/IG)</strong></td></tr><tr><td>Group Minor</td><td>Propose (OPR/Gp CC) -> Accept (Gp/CC) -> Implement (OPR/Gp CC) -> <strong>Close (Gp/CC)</strong></td></tr></table>
