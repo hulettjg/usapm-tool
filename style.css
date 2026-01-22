@@ -1,4 +1,4 @@
-/* --- style.css v3.0 --- */
+/* --- style.css v3.1 --- */
 :root {
     --bg-color: #f0f2f5; --text-color: #1c1e21; --container-bg: #ffffff;
     --header-color: #005A9C; --input-bg: #f5f6f7; --input-border: #ccd0d5;
@@ -54,9 +54,10 @@ body.dark-mode select { background-image: url('data:image/svg+xml;charset=US-ASC
 .header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; } .theme-switcher { display: flex; align-items: center; gap: 8px; font-size: 1.5rem; }
 .switch { position: relative; display: inline-block; width: 60px; height: 34px; } .switch input { opacity: 0; width: 0; height: 0; } .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; } .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; } input:checked + .slider { background-color: #2196F3; } input:focus + .slider { box-shadow: 0 0 1px #2196F3; } input:checked + .slider:before { transform: translateX(26px); } .slider.round { border-radius: 34px; } .slider.round:before { border-radius: 50%; }
 .collapsible { background-color: var(--collapsible-bg); color: var(--text-color); cursor: pointer; padding: 18px; width: 100%; border: 1px solid var(--item-border); text-align: left; outline: none; font-size: 1.1rem; font-weight: 600; border-radius: 8px; transition: background-color 0.2s; } .collapsible.active, .collapsible:hover { background-color: var(--collapsible-hover); }
-.guidance-content { padding: 0 18px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: var(--container-bg); border-radius: 0 0 8px 8px; border: 1px solid var(--item-border); border-top: none; }
+.guidance-content { padding: 18px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: var(--container-bg); border-radius: 0 0 8px 8px; border: 1px solid var(--item-border); border-top: none; }
+.guidance-content table { width: 100%; border-collapse: collapse; margin: 15px 0; } .guidance-content th, .guidance-content td { border: 1px solid var(--item-border); padding: 10px; text-align: left; }
 .item-meta { font-size: 0.8rem; color: #6c757d; margin-top: 5px; } body.dark-mode .item-meta { color: #adb5bd; }
-.filter-section { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.filter-section { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; align-items: end; margin-bottom: 15px; }
 .footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #888; }
 .slide-watermark { position: absolute; bottom: 8px; right: 12px; font-size: 0.9vw; color: rgba(0, 0, 0, 0.15); font-family: "Courier New", Courier, monospace; pointer-events: none; }
 body.dark-mode .slide-watermark { color: rgba(255, 255, 255, 0.15); }
@@ -65,35 +66,10 @@ body.dark-mode .slide-watermark { color: rgba(255, 255, 255, 0.15); }
 .status-pending { background-color: var(--status-pending); }
 .status-completed { background-color: var(--status-completed); }
 .status-revisions { background-color: var(--status-revisions); }
-
-/* --- NEW: Actions Menu Styles --- */
 .actions-menu { position: relative; display: inline-block; }
 .actions-btn { background-color: #6c757d; color: white; }
 .actions-btn:hover { background-color: #5a6268; }
-.actions-dropdown {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: var(--container-bg);
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    border-radius: 6px;
-    border: 1px solid var(--item-border);
-    padding: 5px 0;
-}
-.actions-dropdown button {
-    color: var(--text-color);
-    padding: 10px 15px;
-    text-decoration: none;
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin: 0;
-    border-radius: 0;
-}
+.actions-dropdown { display: none; position: absolute; right: 0; background-color: var(--container-bg); min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 6px; border: 1px solid var(--item-border); padding: 5px 0; }
+.actions-dropdown button { color: var(--text-color); padding: 10px 15px; text-decoration: none; display: block; width: 100%; text-align: left; background: none; border: none; cursor: pointer; margin: 0; border-radius: 0; font-size: 0.9rem; }
 .actions-dropdown button:hover { background-color: var(--item-hover-bg); }
 .show { display: block; }
