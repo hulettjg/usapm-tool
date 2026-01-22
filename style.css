@@ -1,4 +1,4 @@
-/* --- style.css v2.5.4 --- */
+/* --- style.css v2.5.5 --- */
 :root {
     --bg-color: #f0f2f5; --text-color: #1c1e21; --container-bg: #ffffff;
     --header-color: #005A9C; --input-bg: #f5f6f7; --input-border: #ccd0d5;
@@ -55,10 +55,22 @@ body.dark-mode select { background-image: url('data:image/svg+xml;charset=US-ASC
 .backup-btn:hover { background-color: #138496; }
 .restore-btn { background-color: #6c757d; color: white; }
 .restore-btn:hover { background-color: #5a6268; }
-.slide { position: relative; border: 1px solid var(--item-border); background: var(--container-bg); color: var(--text-color); width: 100%; aspect-ratio: 16/9; display: flex; flex-direction: column; box-shadow: 0 6px 18px var(--shadow-2); border-radius: 8px; overflow: hidden; }
-.slide-header { background-color: #003366; color: white; text-align: center; padding: 1.2vw; font-size: 1.6vw; font-weight: bold; }
 
 /* THIS BLOCK IS NOW FIXED */
+.slide { 
+    position: relative; 
+    border: 1px solid var(--item-border); 
+    background: var(--container-bg); 
+    color: var(--text-color); 
+    width: 100%; 
+    /* aspect-ratio has been REMOVED to allow the height to be dynamic */
+    display: flex; 
+    flex-direction: column; 
+    box-shadow: 0 6px 18px var(--shadow-2); 
+    border-radius: 8px; 
+    overflow: hidden; 
+}
+.slide-header { background-color: #003366; color: white; text-align: center; padding: 1.2vw; font-size: 1.6vw; font-weight: bold; }
 .slide-body {
     padding: 1.8vw;
     font-size: 1.2vw;
@@ -67,7 +79,8 @@ body.dark-mode select { background-image: url('data:image/svg+xml;charset=US-ASC
     word-wrap: break-word;
     font-family: "Courier New", Courier, monospace;
     line-height: 1.4;
-    overflow-y: auto; /* THIS IS THE FIX */
+    min-height: 250px; /* Ensures a minimum size, but can grow taller */
+    /* overflow-y has been REMOVED to prevent scrolling */
 }
 
 .header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; } .theme-switcher { display: flex; align-items: center; gap: 8px; font-size: 1.5rem; }
